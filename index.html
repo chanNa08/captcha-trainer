@@ -17,8 +17,23 @@
       color: #007bff;
     }
 
+    #startBtn {
+      font-size: 1.2em;
+      padding: 10px 24px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 20px;
+      transition: background-color 0.3s;
+    }
+    #startBtn:hover {
+      background-color: #0056b3;
+    }
+
     #captchaImage {
-      display: block;
+      display: none;
       margin: 20px auto;
       border: 2px solid #333;
       border-radius: 8px;
@@ -32,22 +47,25 @@
       padding: 8px 12px;
       width: 220px;
       text-align: center;
+      display: none;
+    }
+
+    #feedback, #timer, #stats {
+      display: none;
+      margin-top: 15px;
     }
 
     #feedback {
-      margin-top: 15px;
       font-weight: bold;
       font-size: 1.2em;
     }
 
     #timer {
-      margin-top: 15px;
       font-size: 1.1em;
       color: #0066cc;
     }
 
     #stats {
-      margin-top: 20px;
       font-size: 1em;
       color: #444;
     }
@@ -56,13 +74,13 @@
 <body>
   <h1>驗證碼訓練器</h1>
 
+  <!-- 🔥 新增：開始訓練按鈕 -->
+  <button id="startBtn">開始訓練</button>
+
   <img id="captchaImage" src="" alt="Captcha" />
-
   <div id="timer">⏱ 時間：0 秒</div>
-
   <input id="answer" type="text" placeholder="輸入驗證碼" autocomplete="off" />
   <div id="feedback"></div>
-
   <div id="stats">答題數：0｜平均時間：0 秒</div>
 
   <script src="script.js"></script>
