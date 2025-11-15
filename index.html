@@ -1,19 +1,69 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Captcha Trainer 驗證碼練習</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>驗證碼訓練器</title>
+  <style>
+    body {
+      font-family: "Microsoft JhengHei", sans-serif;
+      text-align: center;
+      background-color: #f8fafc;
+      color: #222;
+      margin-top: 60px;
+    }
+
+    h1 {
+      color: #007bff;
+    }
+
+    #captchaImage {
+      display: block;
+      margin: 20px auto;
+      border: 2px solid #333;
+      border-radius: 8px;
+      background-color: #fff;
+      width: 230px;
+      height: 80px;
+    }
+
+    #answer {
+      font-size: 1.2em;
+      padding: 8px 12px;
+      width: 220px;
+      text-align: center;
+    }
+
+    #feedback {
+      margin-top: 15px;
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+
+    #timer {
+      margin-top: 15px;
+      font-size: 1.1em;
+      color: #0066cc;
+    }
+
+    #stats {
+      margin-top: 20px;
+      font-size: 1em;
+      color: #444;
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h1>驗證碼練習</h1>
-    <img id="captchaImage" alt="captcha" />
-    <input id="userInput" type="text" placeholder="請輸入圖片中的文字" autocomplete="off" />
-    <p id="feedback"></p>
-    <p class="note">按 Enter 檢查答案，1 秒後自動換題</p>
-  </div>
+  <h1>驗證碼訓練器</h1>
+
+  <img id="captchaImage" src="" alt="Captcha" />
+
+  <div id="timer">⏱ 時間：0 秒</div>
+
+  <input id="answer" type="text" placeholder="輸入驗證碼" autocomplete="off" />
+  <div id="feedback"></div>
+
+  <div id="stats">答題數：0｜平均時間：0 秒</div>
 
   <script src="script.js"></script>
 </body>
