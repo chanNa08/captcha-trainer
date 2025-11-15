@@ -10,20 +10,37 @@ const inputEl = document.getElementById("answer");
 const feedbackEl = document.getElementById("feedback");
 const timerEl = document.getElementById("timer");
 const statsEl = document.getElementById("stats");
+const startBtn = document.getElementById("startBtn");
 
+// 載入題目
 fetch("images/list.json")
   .then((res) => res.json())
   .then((data) => {
     imageList = data;
-    showNextQuestion();
+    startBtn.disabled = false;
   })
   .catch((err) => {
+    feedbackEl.style.display = "block";
     feedbackEl.textContent =
       "⚠️ 無法載入 images/list.json，請確認 list.json 是否存在。";
     console.error(err);
   });
 
-// 顯示下一題
+// === 點擊「開始訓練」按鈕 ===
+startBtn.addEventListener("click", () => {
+  startBtn.style.display = "none";
+
+  // 顯示訓練介面
+  imageEl.style.display = "block";
+  inputEl.style.display = "inline-block";
+  feedbackEl.style.display = "block";
+  timerEl.style.display = "block";
+  statsEl.style.display = "block";
+
+  showNextQuestion();
+});
+
+// === 顯示新題目 ===
 function showNextQuestion() {
   currentImage = imageList[Math.floor(Math.random() * imageList.length)];
   imageEl.src = `images/${currentImage}`;
@@ -33,7 +50,7 @@ function showNextQuestion() {
   resetTimer();
 }
 
-// 檢查答案
+// === 檢查答案 ===
 function checkAnswer() {
   const userAnswer = inputEl.value.trim().toUpperCase();
   const correctAnswer = currentImage.split(".")[0].toUpperCase();
@@ -53,14 +70,14 @@ function checkAnswer() {
   }
 }
 
-// 鍵盤事件
+// === Enter 鍵確認答案 ===
 inputEl.addEventListener("keypress", (e) => {
   if (e.key === "Enter") {
     checkAnswer();
   }
 });
 
-// ====== 計時功能 ======
+// ====== 計時控制 ======
 function startTimer() {
   startTime = Date.now();
   timerInterval = setInterval(() => {
@@ -75,7 +92,7 @@ function resetTimer() {
   startTimer();
 }
 
-// ====== 統計顯示 ======
+// ====== 統計 ======
 function updateStats() {
   const avg = (totalSeconds / totalQuestions).toFixed(1);
   statsEl.textContent = `答題數：${totalQuestions}｜平均時間：${avg} 秒`;
