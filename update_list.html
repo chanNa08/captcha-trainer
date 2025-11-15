@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>list.json 自動產生器</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    h1 { color: #333; }
+    .box {
+      background: #fff;
+      padding: 20px 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    input[type=file] {
+      margin-top: 15px;
+    }
+    pre {
+      background: #eee;
+      text-align: left;
+      padding: 10px;
+      border-radius: 5px;
+      width: 300px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      font-size: 13px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    button {
+      margin-top: 15px;
+      padding: 8px 20px;
+      background: #0078d7;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #005ea3;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="box">
+    <h1>產生 list.json</h1>
+    <p>選取你的所有驗證碼圖片 (.png / .jpg)</p>
+    <input type="file" id="files" multiple accept=".png,.jpg,.jpeg">
+    <button id="generateBtn" disabled>產生 list.json</button>
+    <pre id="output"></pre>
+  </div>
+
+  <script>
+    const filesInput = document.getElementById("files");
+    const output = document.getElementById("output");
+    const generateBtn = document.getElementById("generateBtn");
+    let fileList = [];
+
+    filesInput.addEventListener("change", (event) => {
+      const files = Array.from(event.target.files);
+      if (files.length === 0) {
+        output.textContent = "尚未選取任何檔案。";
+        generateBtn.disabled = true;
+        return;
+      }
+      fileList = files.map(f => f.name);
+      const pretty = JSON.stringify(fileList, null, 2);
+      output.textContent = pretty;
+      generateBtn.disabled = false;
+    });
+
+    generateBtn.addEventListener("click", () => {
+      const jsonData = JSON.stringify(fileList, null, 2);
+      const blob = new Blob([jsonData], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "list.json";
+      a.click();
+    });
+  </script>
+
+</body>
+</html>
