@@ -1,62 +1,82 @@
-// 讀取 images/list.json，自動建立題庫
-async function loadCaptchas() {
-  const response = await fetch("images/list.json");
-  if (!response.ok) throw new Error("無法讀取 list.json");
-  const files = await response.json();
+let imageList = [];
+let currentImage = "";
+let startTime;
+let timerInterval;
+let totalQuestions = 0;
+let totalSeconds = 0;
 
-  return files.map(file => ({
-    img: `images/${file}`,
-    answer: file.replace(/\.[^.]+$/, "").toUpperCase()
-  }));
+const imageEl = document.getElementById("captchaImage");
+const inputEl = document.getElementById("answer");
+const feedbackEl = document.getElementById("feedback");
+const timerEl = document.getElementById("timer");
+const statsEl = document.getElementById("stats");
+
+fetch("images/list.json")
+  .then((res) => res.json())
+  .then((data) => {
+    imageList = data;
+    showNextQuestion();
+  })
+  .catch((err) => {
+    feedbackEl.textContent =
+      "⚠️ 無法載入 images/list.json，請確認 list.json 是否存在。";
+    console.error(err);
+  });
+
+// 顯示下一題
+function showNextQuestion() {
+  currentImage = imageList[Math.floor(Math.random() * imageList.length)];
+  imageEl.src = `images/${currentImage}`;
+  inputEl.value = "";
+  feedbackEl.textContent = "";
+  inputEl.focus();
+  resetTimer();
 }
 
-let captchas = [];
-let currentCaptcha = null;
-const captchaImage = document.getElementById("captchaImage");
-const userInput = document.getElementById("userInput");
-const feedback = document.getElementById("feedback");
-
-async function init() {
-  try {
-    captchas = await loadCaptchas();
-    if (captchas.length === 0) {
-      feedback.textContent = "⚠️ images 資料夾中沒有找到圖片。";
-      return;
-    }
-    showCaptcha();
-  } catch (error) {
-    feedback.textContent = "❌ 無法載入 images/list.json";
-    console.error(error);
-  }
-}
-
-function getRandomCaptcha() {
-  const index = Math.floor(Math.random() * captchas.length);
-  return captchas[index];
-}
-
-function showCaptcha() {
-  currentCaptcha = getRandomCaptcha();
-  captchaImage.src = currentCaptcha.img;
-  userInput.value = "";
-  feedback.textContent = "";
-  userInput.focus();
-}
-
+// 檢查答案
 function checkAnswer() {
-  const userAnswer = userInput.value.trim();
-  if (userAnswer.toUpperCase() === currentCaptcha.answer.toUpperCase()) {
-    feedback.textContent = "✅ 正確！";
-    feedback.className = "feedback correct";
+  const userAnswer = inputEl.value.trim().toUpperCase();
+  const correctAnswer = currentImage.split(".")[0].toUpperCase();
+
+  if (userAnswer === correctAnswer) {
+    const usedSeconds = Math.floor((Date.now() - startTime) / 1000);
+    feedbackEl.textContent = `✅ 正確！你用了 ${usedSeconds} 秒。`;
+
+    totalQuestions++;
+    totalSeconds += usedSeconds;
+    updateStats();
+
+    clearInterval(timerInterval);
+    setTimeout(showNextQuestion, 1000); // 1秒後下一題
   } else {
-    feedback.textContent = "❌ 錯誤";
-    feedback.className = "feedback wrong";
+    feedbackEl.textContent = "❌ 錯誤，請再試一次！";
   }
-  setTimeout(showCaptcha, 1000);
 }
 
-userInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") checkAnswer();
+// 鍵盤事件
+inputEl.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") {
+    checkAnswer();
+  }
 });
 
-init();
+// ====== 計時功能 ======
+function startTimer() {
+  startTime = Date.now();
+  timerInterval = setInterval(() => {
+    const seconds = Math.floor((Date.now() - startTime) / 1000);
+    timerEl.textContent = `⏱ 時間：${seconds} 秒`;
+  }, 1000);
+}
+
+function resetTimer() {
+  clearInterval(timerInterval);
+  timerEl.textContent = "⏱ 時間：0 秒";
+  startTimer();
+}
+
+// ====== 統計顯示 ======
+function updateStats() {
+  const avg = (totalSeconds / totalQuestions).toFixed(1);
+  statsEl.textContent = `答題數：${totalQuestions}｜平均時間：${avg} 秒`;
+}
